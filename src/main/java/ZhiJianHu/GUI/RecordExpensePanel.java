@@ -1,14 +1,22 @@
-package zhijianhu.bill.GUI;
+package ZhiJianHu.GUI;
+
+import ZhiJianHu.Dao.expenseDao;
+import ZhiJianHu.Dao.expenseTypeDao;
+import ZhiJianHu.PoJO.expense;
+import ZhiJianHu.PoJO.expenseType;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class RecordExpensePanel extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private expenseDao ed;
+    private expenseTypeDao etd;
 
     public RecordExpensePanel(CardLayout cardLayout, JPanel cardPanel) {
         this.cardLayout = cardLayout;
@@ -28,12 +36,13 @@ public class RecordExpensePanel extends JPanel {
         add(amountLabel);
         add(amountField);
 
+
+        ed=new expenseDao();
+        etd=new expenseTypeDao();
+
         JLabel categoryLabel = new JLabel("分类:");
         JComboBox<String> categoryComboBox = new JComboBox<>();
-        categoryComboBox.addItem("餐饮");
-        categoryComboBox.addItem("交通");
-        categoryComboBox.addItem("购物");
-        categoryComboBox.addItem("其他");
+        addItems(categoryComboBox);
         categoryComboBox.setPreferredSize(new Dimension(200, 30));
         add(categoryLabel);
         add(categoryComboBox);
@@ -59,19 +68,34 @@ public class RecordExpensePanel extends JPanel {
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "expenseSummary"));
         add(backButton);
 
+
         JButton okButton = createStyledButton("确定");
         okButton.addActionListener(e -> {
-            String amount = amountField.getText();
+            double amount = Double.parseDouble( amountField.getText());
+//分类
             String category = (String) categoryComboBox.getSelectedItem();
             String note = noteArea.getText();
             String date = dateField.getText();
 
+            Integer typeId =etd.getIdByName(category);
+            ed.add(new expense(date, typeId,amount,note));
             // 这里可以添加保存记录的逻辑
+//           这里应该刷新
+
             JOptionPane.showMessageDialog(this, "支出记录已保存:\n金额: " + amount + "\n分类: " + category + "\n备注: " + note + "\n日期: " + date, "成功", JOptionPane.INFORMATION_MESSAGE);
 
             cardLayout.show(cardPanel, "expenseSummary");
         });
         add(okButton);
+    }
+
+    private void addItems(JComboBox<String> Box) {
+//        expenseTypeDao etd = new expenseTypeDao();
+        List<expenseType> et =etd.allType();
+        for (expenseType e : et) {
+            Box.addItem(e.getName());
+        }
+
     }
 
     private JButton createStyledButton(String text) {

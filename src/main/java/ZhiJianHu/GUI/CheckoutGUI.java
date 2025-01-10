@@ -1,4 +1,4 @@
-package zhijianhu.bill.GUI;
+package ZhiJianHu.GUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,10 +37,4 @@ public class CheckoutGUI extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            CheckoutGUI gui = new CheckoutGUI();
-            gui.setVisible(true);
-        });
-    }
 }

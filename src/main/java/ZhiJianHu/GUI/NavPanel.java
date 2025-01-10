@@ -1,4 +1,4 @@
-package zhijianhu.bill.GUI;
+package ZhiJianHu.GUI;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,14 +1,22 @@
-package zhijianhu.bill.GUI;
+package ZhiJianHu.GUI;
+
+import ZhiJianHu.Dao.incomeDao;
+import ZhiJianHu.Dao.incomeTypeDao;
+import ZhiJianHu.PoJO.income;
+import ZhiJianHu.PoJO.incomeType;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class RecordIncomePanel extends JPanel {
 
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private incomeDao incomeDao;
+    private incomeTypeDao itd;
 
     public RecordIncomePanel(CardLayout cardLayout, JPanel cardPanel) {
         this.cardLayout = cardLayout;
@@ -28,11 +36,12 @@ public class RecordIncomePanel extends JPanel {
         add(amountLabel);
         add(amountField);
 
+        incomeDao = new incomeDao();
+        itd = new incomeTypeDao();
+
         JLabel categoryLabel = new JLabel("分类:");
         JComboBox<String> categoryComboBox = new JComboBox<>();
-        categoryComboBox.addItem("工资");
-        categoryComboBox.addItem("奖金");
-        categoryComboBox.addItem("其他");
+        addItems(categoryComboBox);
         categoryComboBox.setPreferredSize(new Dimension(200, 30));
         add(categoryLabel);
         add(categoryComboBox);
@@ -65,12 +74,22 @@ public class RecordIncomePanel extends JPanel {
             String note = noteArea.getText();
             String date = dateField.getText();
 
+            Integer id = itd.getIdByName(category);
+            incomeDao.add(new income(date,id,Double.parseDouble(amount),note));
+
             // 这里可以添加保存记录的逻辑
             JOptionPane.showMessageDialog(this, "收入记录已保存:\n金额: " + amount + "\n分类: " + category + "\n备注: " + note + "\n日期: " + date, "成功", JOptionPane.INFORMATION_MESSAGE);
 
             cardLayout.show(cardPanel, "incomeSummary");
         });
         add(okButton);
+    }
+
+    private void addItems(JComboBox<String> Box) {
+        List<incomeType> all = itd.getAll();
+        for (incomeType it : all) {
+            Box.addItem(it.getName());
+        }
     }
 
     private JButton createStyledButton(String text) {
